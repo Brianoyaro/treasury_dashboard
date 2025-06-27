@@ -4,103 +4,80 @@ import TransferMoney from "./transferMoney";
 import AccountCard from "./accountCard";
 
 const default_accounts = [
-    { id: 1, name: "Savings Account", currencyType: "USD", amount: 1500 },
-    { id: 2, name: "Checking Account", currencyType: "KES", amount: 800 },
-    { id: 3, name: "Investment Account", currencyType: "NGN", amount: 2500 }
-];
-const default_logs = [
-    { id: 1, from_account: "Savings Account", to_account: "Checking Account", amount: 200, timestamp: "2023-10-01T12:00:00Z", note: "Monthly transfer" },
-    { id: 2, from_account: "Checking Account", to_account: "Investment Account", amount: 500, timestamp: "2023-10-02T14:30:00Z", note: "" }
+  { id: 1, name: "Mpesa_KES_1", currencyType: "KES", amount: 50000 },
+  { id: 2, name: "Bank_USD_1", currencyType: "USD", amount: 1000 },
+  { id: 3, name: "GTB_NGN_1", currencyType: "NGN", amount: 800000 },
+  { id: 4, name: "Mpesa_KES_2", currencyType: "KES", amount: 65000 },
+  { id: 5, name: "Bank_USD_2", currencyType: "USD", amount: 3000 },
+  { id: 6, name: "GTB_NGN_2", currencyType: "NGN", amount: 450000 },
+  { id: 7, name: "Mpesa_KES_3", currencyType: "KES", amount: 22000 },
+  { id: 8, name: "Bank_USD_3", currencyType: "USD", amount: 500 },
+  { id: 9, name: "GTB_NGN_3", currencyType: "NGN", amount: 150000 },
+  { id: 10, name: "Mpesa_KES_4", currencyType: "KES", amount: 32000 },
 ];
 
+const default_logs = [];
+
 const FX = {
-    KSH_USD: 1/150,
-    KSH_NGN: 1/2.5,
-    USD_KSH: 150,
-    USD_NGN: 2.5,
-    NGN_KSH: 1/20,
-    NGN_USD: 1/180
+  KES_USD: 1 / 140,
+  USD_KES: 140,
+  USD_NGN: 1500,
+  NGN_USD: 1 / 1500,
+  KES_NGN: 10.5,
+  NGN_KES: 1 / 10.5,
 };
 
 export default function Dashboard() {
-    const [accounts, setAccounts] = useState(default_accounts);
-    const [logs, setLogs] = useState(default_logs);
-    const onTransfer = (fromAccount, toAccount, amount, note) => {
-        // Ensure both accounts are selected
-        if (!fromAccount || !toAccount || !amount) {
-            alert("Please fill in all fields.");
-            return;
-        }
-        
-        // Find the accounts
-        const from = accounts.find(acc => acc.id === fromAccount);
-        const to = accounts.find(acc => acc.id === toAccount);
-        
-        // Convert amount to the correct currency if necessary
-        let convertedAmount = parseFloat(amount);
-        if (from.currency !== to.currency) {
-            const conversionKey = `${from.currency}_${to.currency}`;
-            if (FX[conversionKey]) {
-                convertedAmount = amount * FX[conversionKey];
-            } else {
-                alert("Currency conversion not supported.");
-                return;
-            }
-        }
-        // Validate the amount
-        if (isNaN(convertedAmount) || convertedAmount <= 0) {
-            alert("Invalid amount.");
-            return;
-        }
-        // cannot transfer to the same account
-        if (from === to) {
-            alert("Cannot transfer to the same account.");
-            return;
-        }
-        // Check if the from account has enough balance
-        if (from.amount < convertedAmount) {
-            alert("Insufficient balance in the from account.");
-            return;
-        }
-        if (!from || !to) {
-            alert("Invalid accounts selected.");
-            return;
-        }
+  const [accounts, setAccounts] = useState(default_accounts);
+  const [logs, setLogs] = useState(default_logs);
 
-        if (from && to && from.amount >= amount) {
-            // Update account balances
-            from.amount -= amount;
-            to.amount += convertedAmount;
+  const onTransfer = (fromAccount, toAccount, amount, note) => {
+    const from = accounts.find((acc) => acc.id === fromAccount);
+    const to = accounts.find((acc) => acc.id === toAccount);
 
-            // Create a new log entry
-            const newLog = {
-                id: logs.length + 1,
-                from_account: from.name,
-                to_account: to.name,
-                amount: convertedAmount,
-                from_currency_type: from.currencyType,
-                to_currency_type: to.currencyType,
-                timestamp: new Date().toISOString(),
-                note
-            };
+    if (!from || !to || from.id === to.id) return alert("Invalid account selection.");
+    if (amount <= 0 || isNaN(amount)) return alert("Invalid amount.");
 
-            // Update state
-            setAccounts([...accounts]);
-            setLogs([...logs, newLog]);
-        } else {
-            alert("Transfer failed. Check account balances.");
-        }
-    };
+    let convertedAmount = amount;
+    if (from.currencyType !== to.currencyType) {
+      const key = `${from.currencyType}_${to.currencyType}`;
+      if (!FX[key]) return alert("FX rate not supported.");
+      convertedAmount = amount * FX[key];
+    }
 
-    return (
-        <div className="dashboard">
-            <div className="account-cards">
-                {accounts.map((account) => (
-                    <AccountCard key={account.id} account={account} />
-                ))}
-            </div>
-            <TransferMoney accounts={accounts} onTransfer={onTransfer} />
-            <Logs logs={logs} />
-        </div>
-    );
+    if (from.amount < amount) return alert("Insufficient funds.");
+
+    const updatedAccounts = accounts.map((acc) => {
+      if (acc.id === from.id) return { ...acc, amount: acc.amount - amount };
+      if (acc.id === to.id) return { ...acc, amount: acc.amount + convertedAmount };
+      return acc;
+    });
+
+    setAccounts(updatedAccounts);
+    setLogs([
+      {
+        id: logs.length + 1,
+        from_account: from.name,
+        to_account: to.name,
+        from_currency_type: from.currencyType,
+        to_currency_type: to.currencyType,
+        amount: convertedAmount,
+        note,
+        timestamp: new Date().toISOString(),
+      },
+      ...logs,
+    ]);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {accounts.map((account) => (
+          <AccountCard key={account.id} account={account} />
+        ))}
+      </div>
+      <TransferMoney accounts={accounts} onTransfer={onTransfer} />
+      <Logs logs={logs} />
+    </div>
+  );
 }
