@@ -2,29 +2,27 @@ import React, { useState, useEffect } from "react";
 
 export default function Logs({ param_logs, param_accounts }) {
   const [currencyType, setCurrencyType] = useState("");
-  const [fromAccount, setFromAccount] = useState("");
-  const [toAccount, setToAccount] = useState("");
+  const [account, setAccount] = useState("");
   const [logs, setLogs] = useState(param_logs);
 
   useEffect(() => {
-    if (!fromAccount && !toAccount && !currencyType) {
+    if (!account && !currencyType) {
       setLogs(param_logs);
       return;
     }
 
     const filteredLogs = param_logs.filter((log) => {
-      const matchesFrom = fromAccount && log.from_account.toLowerCase().includes(fromAccount.toLowerCase());
-      const matchesTo = toAccount && log.to_account.toLowerCase().includes(toAccount.toLowerCase());
+      const matchesFrom = account && log.from_account.toLowerCase().includes(account.toLowerCase());
+      const matchesTo = account && log.to_account.toLowerCase().includes(account.toLowerCase());
       const matchesCurrency = currencyType && log.to_currency_type.toLowerCase().includes(currencyType.toLowerCase());
       return matchesFrom || matchesTo || matchesCurrency;
     });
 
     setLogs(filteredLogs);
-  }, [fromAccount, toAccount, currencyType, param_logs]);
+  }, [account, currencyType, param_logs]);
 
   const resetFilters = () => {
-    setFromAccount("");
-    setToAccount("");
+    setAccount("");
     setCurrencyType("");
   };
 
@@ -36,21 +34,10 @@ export default function Logs({ param_logs, param_accounts }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
           <select
             className="w-full p-2 border rounded text-sm lg:text-xs"
-            value={fromAccount}
-            onChange={(e) => setFromAccount(e.target.value)}
+            value={account}
+            onChange={(e) => setAccount(e.target.value)}
           >
-            <option value="">From Account</option>
-            {param_accounts.map((acc) => (
-              <option key={acc.id} value={acc.name}>{acc.name}</option>
-            ))}
-          </select>
-
-          <select
-            className="w-full p-2 border rounded text-sm lg:text-xs"
-            value={toAccount}
-            onChange={(e) => setToAccount(e.target.value)}
-          >
-            <option value="">To Account</option>
+            <option value="">Account</option>
             {param_accounts.map((acc) => (
               <option key={acc.id} value={acc.name}>{acc.name}</option>
             ))}
@@ -86,7 +73,12 @@ export default function Logs({ param_logs, param_accounts }) {
               <p className="text-sm"><strong>From:</strong> {log.from_account}</p>
               <p className="text-sm"><strong>To:</strong> {log.to_account}</p>
               <p className="text-sm"><strong>Amount:</strong> {log.amount.toFixed(2)} {log.to_currency_type}</p>
-              <p className="text-sm text-gray-500">{new Date(log.timestamp).toLocaleString()}</p>
+              { log.futureDate && (
+                <p className="text-sm text-gray-500">
+                  <strong>Scheduled Transaction Date:</strong> {new Date(log.futureDate).toLocaleDateString()}
+                </p>
+              )}
+              <p className="text-sm text-gray-500">Log Time: {new Date(log.timestamp).toLocaleString()}</p>
               {log.note && <p className="text-sm italic">Note: {log.note}</p>}
             </div>
           ))}

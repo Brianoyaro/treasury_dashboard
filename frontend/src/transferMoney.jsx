@@ -5,14 +5,18 @@ export default function TransferMoney({ accounts, onTransfer }) {
   const [toAccount, setToAccount] = useState("");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
+  const [date, setDate] = useState("");
 
   const handleTransfer = (e) => {
     e.preventDefault();
-    onTransfer(parseInt(fromAccount), parseInt(toAccount), parseFloat(amount), note);
+    // const dateObj = new Date(date);
+    const dateObj = date
+    onTransfer(parseInt(fromAccount), parseInt(toAccount), parseFloat(amount), note, dateObj);
     setFromAccount("");
     setToAccount("");
     setAmount("");
     setNote("");
+    setDate("");
   };
 
   return (
@@ -57,6 +61,15 @@ export default function TransferMoney({ accounts, onTransfer }) {
           placeholder="Note (optional)"
           value={note}
           onChange={(e) => setNote(e.target.value)}
+        />
+        <input
+        type="date"
+        className="w-full p-2 border rounded"
+        placeholder="Enter future Date"
+        onChange={(e) => setDate(e.target.value)}
+        value={date}
+        min={new Date().toISOString().split("T")[0]} // Prevent past dates
+        max={new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split("T")[0]} // Allow up to one year in the
         />
         <button
           type="submit"

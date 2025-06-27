@@ -31,7 +31,7 @@ export default function Dashboard() {
   const [accounts, setAccounts] = useState(default_accounts);
   const [logs, setLogs] = useState(default_logs);
 
-  const onTransfer = (fromAccount, toAccount, amount, note) => {
+  const onTransfer = (fromAccount, toAccount, amount, note, dateObj) => {
     const from = accounts.find((acc) => acc.id === fromAccount);
     const to = accounts.find((acc) => acc.id === toAccount);
 
@@ -63,6 +63,7 @@ export default function Dashboard() {
         to_currency_type: to.currencyType,
         amount: convertedAmount,
         note,
+        futureDate: dateObj,
         timestamp: new Date().toISOString(),
       },
       ...logs,
