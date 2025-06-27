@@ -16,7 +16,7 @@ export default function TransferMoney({ accounts, onTransfer }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow">
+    <div className="bg-white p-6 rounded-2xl shadow h-full  mx-auto w-full">
       <h2 className="text-lg font-bold mb-4">Transfer Money</h2>
       <form onSubmit={handleTransfer} className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

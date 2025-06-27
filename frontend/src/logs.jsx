@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Logs({ logs }) {
   return (
-    <div className="bg-white p-6 rounded-2xl shadow">
+    <div className="bg-white p-6 rounded-2xl shadow h-full max-h-[28rem] overflow-y-auto">
       <h2 className="text-lg font-bold mb-4">Transaction Logs</h2>
       {logs.length === 0 && <p className="text-gray-400 text-sm">No transactions yet.</p>}
       <div className="space-y-4">
