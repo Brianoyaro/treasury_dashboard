@@ -3,12 +3,12 @@ import Logs from "./logs";
 import TransferMoney from "./transferMoney";
 import AccountCard from "./accountCard";
 
-const accounts = [
-    { id: 1, name: "Savings Account", currency: "USD", amount: 1500 },
-    { id: 2, name: "Checking Account", currency: "KES", amount: 800 },
-    { id: 3, name: "Investment Account", currency: "NGN", amount: 2500 }
+const default_accounts = [
+    { id: 1, name: "Savings Account", currencyType: "USD", amount: 1500 },
+    { id: 2, name: "Checking Account", currencyType: "KES", amount: 800 },
+    { id: 3, name: "Investment Account", currencyType: "NGN", amount: 2500 }
 ];
-const logs = [
+const default_logs = [
     { id: 1, from_account: "Savings Account", to_account: "Checking Account", amount: 200, timestamp: "2023-10-01T12:00:00Z", note: "Monthly transfer" },
     { id: 2, from_account: "Checking Account", to_account: "Investment Account", amount: 500, timestamp: "2023-10-02T14:30:00Z", note: "" }
 ];
@@ -23,8 +23,8 @@ const FX = {
 };
 
 export default function Dashboard() {
-    const [accounts, setAccounts] = useState(accounts);
-    const [logs, setLogs] = useState(logs);
+    const [accounts, setAccounts] = useState(default_accounts);
+    const [logs, setLogs] = useState(default_logs);
     const onTransfer = (fromAccount, toAccount, amount, note) => {
         // Ensure both accounts are selected
         if (!fromAccount || !toAccount || !amount) {
@@ -78,6 +78,8 @@ export default function Dashboard() {
                 from_account: from.name,
                 to_account: to.name,
                 amount: convertedAmount,
+                from_currency_type: from.currencyType,
+                to_currency_type: to.currencyType,
                 timestamp: new Date().toISOString(),
                 note
             };
@@ -92,7 +94,6 @@ export default function Dashboard() {
 
     return (
         <div className="dashboard">
-            <h1>Dashboard</h1>
             <div className="account-cards">
                 {accounts.map((account) => (
                     <AccountCard key={account.id} account={account} />

@@ -9,7 +9,7 @@ export default function TransferMoney({ accounts, onTransfer }) {
     const handleTransfer = (e) => {
         e.preventDefault();
         if (fromAccount && toAccount && amount) {
-            onTransfer(fromAccount, toAccount, amount, note);
+            onTransfer(parseInt(fromAccount), parseInt(toAccount), parseFloat(amount), note);
             setFromAccount("");
             setToAccount("");
             setAmount("");
