@@ -79,7 +79,7 @@ export default function Dashboard() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TransferMoney accounts={accounts} onTransfer={onTransfer} />
-        <Logs logs={logs} />
+        <Logs param_logs={logs} param_accounts={accounts} />
       </div>
       {/* <TransferMoney accounts={accounts} onTransfer={onTransfer} />
       <Logs logs={logs} /> */}
