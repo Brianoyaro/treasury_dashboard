@@ -65,7 +65,7 @@ export default function Logs({ param_logs, param_accounts }) {
       </form>
 
       {logs.length === 0 ? (
-        <p className="text-gray-400 text-sm">No transactions match the filter.</p>
+        <p className="text-gray-400 text-sm">No transactions.</p>
       ) : (
         <div className="space-y-4">
           {logs.map((log) => (
